@@ -35,7 +35,7 @@ async function start() {
       });
 
       res.end(JSON.stringify({
-        message: "Hello from my Node.js API!",
+        message: "Hello from my automatically deployed Node.js API!",
         visits: visits,
         redis: "connected"
       }));
