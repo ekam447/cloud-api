@@ -1,102 +1,11 @@
-const http = require("http");
-const redis = require("redis");
-
-const client = redis.createClient({
-  url: "redis://redis:6379"
-});
-
-client.on("error", (err) => {
-  console.error("Redis error:", err);
-});
-
-async function start() {
-  await client.connect();
-
-  const server = http.createServer(async (req, res) => {
-    console.log(
-      `${new Date().toISOString()} ${req.method} ${req.url}`
-    );
-
-    // Health check
-    if (req.url === "/health") {
+    // API version
+    } else if (req.url === "/version") {
       res.writeHead(200, {
         "Content-Type": "application/json"
       });
 
       res.end(JSON.stringify({
-        status: "ok",
-        redis: "connected"
+        version: "1.3.0",
+        service: "Cloud API",
+        environment: "production"
       }));
-
-    // Main API
-    } else if (req.url === "/api") {
-      const visits = await client.incr("visits");
-
-      res.writeHead(200, {
-        "Content-Type": "application/json"
-      });
-
-      res.end(JSON.stringify({
-        message: "Hello from my automatically deployed Node.js API!",
-        visits: visits,
-        redis: "connected"
-      }));
-
-    // API information
-    } else if (req.url === "/info") {
-      res.writeHead(200, {
-        "Content-Type": "application/json"
-      });
-
-      res.end(JSON.stringify({
-        name: "Cloud API",
-        version: "1.2.0",
-        environment: "production",
-        deployed: "2026-09-01"
-      }));
-
-    // API statistics
-    } else if (req.url === "/stats") {
-      const visits = await client.get("visits");
-
-      res.writeHead(200, {
-        "Content-Type": "application/json"
-      });
-
-      res.end(JSON.stringify({
-        visits: Number(visits || 0),
-        service: "Cloud API"
-      }));
-
-    // API uptime
-    } else if (req.url === "/uptime") {
-      const uptime = process.uptime();
-
-      res.writeHead(200, {
-        "Content-Type": "application/json"
-      });
-
-      res.end(JSON.stringify({
-        uptime_seconds: Math.floor(uptime),
-        uptime_minutes: Math.floor(uptime / 60),
-        service: "Cloud API"
-      }));
-
-    // Unknown route
-    } else {
-      res.writeHead(404, {
-        "Content-Type": "application/json"
-      });
-
-      res.end(JSON.stringify({
-        error: "Not found"
-      }));
-    }
-  });
-
-  server.listen(3000, () => {
-    console.log("API running on port 3000");
-  });
-}
-
-start();
