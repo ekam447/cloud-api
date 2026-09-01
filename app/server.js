@@ -68,6 +68,20 @@ async function start() {
         service: "Cloud API"
       }));
 
+    // API uptime
+    } else if (req.url === "/uptime") {
+      const uptime = process.uptime();
+
+      res.writeHead(200, {
+        "Content-Type": "application/json"
+      });
+
+      res.end(JSON.stringify({
+        uptime_seconds: Math.floor(uptime),
+        uptime_minutes: Math.floor(uptime / 60),
+        service: "Cloud API"
+      }));
+
     // Unknown route
     } else {
       res.writeHead(404, {
