@@ -15,7 +15,6 @@ await client.connect();
 const server = http.createServer(async (req, res) => {
 console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
 
-```
 // Health check
 if (req.url === "/health") {
   res.writeHead(200, {
@@ -63,7 +62,6 @@ if (req.url === "/health") {
     error: "Not found"
   }));
 }
-```
 
 });
 
