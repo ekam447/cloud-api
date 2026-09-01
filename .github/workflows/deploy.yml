@@ -19,15 +19,36 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+
           script: |
+            set -e
+
             cd ~/cloud-api
+
+            echo "Pulling latest code..."
             git pull origin main
 
+            echo "Updating Nginx configuration..."
             sudo cp nginx/myawswebsite.conf /etc/nginx/conf.d/myawswebsite.conf
+
+            echo "Testing Nginx..."
             sudo nginx -t
+
+            echo "Reloading Nginx..."
             sudo systemctl reload nginx
 
+            echo "Building latest Docker image..."
             cd app
-            sudo docker build -t cloud-api:latest .
+            sudo docker build --no-cache -t cloud-api:latest .
             cd ..
-            sudo docker-compose up -d
+
+            echo "Recreating API container..."
+            sudo docker-compose up -d --force-recreate api
+
+            echo "Waiting for API..."
+            sleep 10
+
+            echo "Checking containers..."
+            sudo docker-compose ps
+
+            echo "Deployment completed successfully."
