@@ -15,7 +15,19 @@ async function start() {
   const server = http.createServer(async (req, res) => {
     console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
 
-    if (req.url === "/api") {
+    // Health check
+    if (req.url === "/health") {
+      res.writeHead(200, {
+        "Content-Type": "application/json"
+      });
+
+      res.end(JSON.stringify({
+        status: "ok",
+        redis: "connected"
+      }));
+
+    // Main API
+    } else if (req.url === "/api") {
       const visits = await client.incr("visits");
 
       res.writeHead(200, {
@@ -27,6 +39,7 @@ async function start() {
         visits: visits,
         redis: "connected"
       }));
+
     } else {
       res.writeHead(404, {
         "Content-Type": "application/json"
