@@ -50,7 +50,7 @@ async function start() {
 
       res.end(JSON.stringify({
         name: "Cloud API",
-        version: "1.2.0",
+        version: "1.3.0",
         environment: "production",
         deployed: "2026-09-01"
       }));
